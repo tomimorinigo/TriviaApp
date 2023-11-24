@@ -9,69 +9,59 @@ public class triviaSystem {
         Scanner scanner = new Scanner(System.in);
         Random random = new Random();
         
-        System.out.println("Bienvenido a la trivia! (4. Para salir)");
+        System.out.println("Bienvenido a la trivia!");
+        System.out.println("Ingrese su nombre de usuario: ");
+        String userName = scanner.nextLine();
+        User user = new User(userName, 0);
         
         while (true) {
             
-            System.out.println("Seleccione la categoria de preguntas que desea jugar:");
-            System.out.println("1. Deportes \n2. Historia \n3. Entretenimiento");
+            System.out.println("\nSeleccione la categoria de preguntas que desea jugar:");
+            System.out.println("1. Deportes \n2. Historia \n3. Entretenimiento \n4. Salir");
             
             int opcion = scanner.nextInt();
             switch (opcion) {
                 case 1:
-                    System.out.println("Usted ha seleccionado la categoria de preguntas de Deportes");
-                    int questionId = random.nextInt(10) + 1;
-                    Question question = QuestionRequests.request(1, questionId); 
-                    question.printQuestion();
-                    int answer = scanner.nextInt();
-                    boolean isCorrect = validateAnswer(answer, question);
-                    
-                    if (isCorrect) {
-                        System.out.println("Respuesta correcta!");
-                    } else {
-                        System.out.println("Respuesta incorrecta!");
-                    }
-
+                    System.out.println("\nCategoria de preguntas de Deportes");
+                    handleQuestion(1, user, scanner, random);
                     break;
+
                 case 2:
-                    System.out.println("Usted ha seleccionado la categoria de preguntas de Historia");
-                    questionId = random.nextInt(10) + 1;
-                    question = QuestionRequests.request(2, questionId); 
-                    question.printQuestion();
-                    answer = scanner.nextInt();
-                    isCorrect = validateAnswer(answer, question);
-                    
-                    if (isCorrect) {
-                        System.out.println("Respuesta correcta!");
-                    } else {
-                        System.out.println("Respuesta incorrecta!");
-                    }
-
+                    System.out.println("\nCategoria de preguntas de Historia");
+                    handleQuestion(2, user, scanner, random);
                     break;
+
                 case 3:
-                    System.out.println("Usted ha seleccionado la categoria de preguntas de Entretenimiento");
-                    questionId = random.nextInt(10) + 1;
-                    question = QuestionRequests.request(3, questionId); 
-                    question.printQuestion();
-                    answer = scanner.nextInt();
-                    isCorrect = validateAnswer(answer, question);
-                    
-                    if (isCorrect) {
-                        System.out.println("Respuesta correcta!");
-                    } else {
-                        System.out.println("Respuesta incorrecta!");
-                    }
-
+                    System.out.println("\nCategoria de preguntas de Entretenimiento");
+                    handleQuestion(3, user, scanner, random);
                     break;
+
                 case 4:
                     System.out.println("Gracias por jugar!");
+                    user.printUser();
                     scanner.close();
                     System.exit(0);
                     break;
+
                 default:
                     System.out.println("Opción no valida");
                     break;
             }
+        }
+    }
+
+    public void handleQuestion(int category, User user, Scanner scanner, Random random) {
+        int questionId = random.nextInt(10) + 1;
+        Question question = QuestionRequests.request(category, questionId); 
+        question.printQuestion();
+        int answer = scanner.nextInt();
+        boolean isCorrect = validateAnswer(answer, question);
+        
+        if (isCorrect) {
+            System.out.println("Respuesta correcta! Suma un punto!");
+            user.setScore(user.getScore() + 1);
+        } else {
+            System.out.println("Respuesta incorrecta!");
         }
     }
 

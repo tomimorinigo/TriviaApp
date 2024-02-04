@@ -13,8 +13,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "deportes")
-public class SportQuestion implements Serializable{
+@Table(name = "entretenimiento")
+public class EntertainmentQuestion implements Serializable{
 
     private final static long serialVersionUID = 1L;
 

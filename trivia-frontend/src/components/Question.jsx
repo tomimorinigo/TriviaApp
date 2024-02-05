@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import getRandomQuestion from "../services/QuestionsService";
+import "../assets/styles/Question.css";
+import ResultModal from "./ResultModal";
 
 function Question({ category, setScore }) {
   const [question, setQuestion] = useState(null);
@@ -8,6 +10,8 @@ function Question({ category, setScore }) {
   const [counter, setCounter] = useState(10);
   const [selectionMade, setSelectionMade] = useState(false);
   const [counterInterval, setCounterInterval] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,6 +63,25 @@ function Question({ category, setScore }) {
       setSelectedOption(option);
       setSelectionMade(true); // Establecer que se ha realizado una selección
       clearInterval(counterInterval);
+      showModal(option === question.answer);
+    }
+  };
+
+  const showModal = (isCorrect) => {
+    if (isCorrect) {
+      setModalContent(<p>Respuesta correcta!</p>);
+    } else {
+      setModalContent(
+        <p>Respuesta incorrecta. La opcion correcta era: <span>{question.answer}</span></p>
+      );
+    }
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    if (selectedOption === question.answer) {
+      setScore((prevScore) => prevScore + 1);
     }
   };
 
@@ -70,22 +93,24 @@ function Question({ category, setScore }) {
 
   const handleAnswer = () => {
     if (selectedOption === question.answer) {
-      alert("Respuesta correcta!");
       setScore((prevScore) => prevScore + 1);
-    } else if(selectedOption !== question.answer){
-      alert(`Incorrecto, la respuesta correcta era ${question.answer}`);
-    } else {
-      alert(`No has seleccionado nada, la respuesta correcta era ${question.answer}` );
     }
   }
 
   return (
-    <div>
-      <h3>Pregunta:</h3>
-      {question !== null && <p>{question.question}</p>}
+    <div className="question-container">
+      <h3 className="question-title">Pregunta:</h3>
+      {question !== null && <p className="question">{question.question}</p>}
       {question !== null &&
         options.map((option, index) => (
           <button
+          className={`question-option ${
+            selectedOption === option
+              ? option === question.answer
+                ? "correct"
+                : "incorrect"
+              : ""
+          }`}
             key={index}
             onClick={() => handleOptionClick(option)}
             value={option}
@@ -94,8 +119,15 @@ function Question({ category, setScore }) {
             {option}
           </button>
         ))}
-      <p>Tiempo restante: {counter}</p>
+      <p className="counter">Tiempo restante: <span>{counter}</span></p>
+      {question !== null && selectedOption !== question.answer && <p>La respuesta correcta era: {question.answer}</p>}
       {counter === 0 && <p className="timeout">Se acabó el tiempo! {selectedOption}</p>}
+
+      <ResultModal
+        visible={modalVisible}
+        content={modalContent}
+        onClose={closeModal}
+      />
     </div>
   );
 }

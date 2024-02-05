@@ -56,7 +56,6 @@ function App() {
 
       {categorySelected && !nextQuestion && (
         <section>
-          <h2>Categoria seleccionada: {category}</h2>
           <Question category={category} setScore={setScore} />
           <button onClick={handleNextQuestion}>Siguiente Pregunta</button>
           <p>Puntaje: {score}</p>
@@ -66,7 +65,6 @@ function App() {
 
       {nextQuestion && (
         <section>
-          <h2>Categoria seleccionada: {category}</h2>
           <Question category={category} setScore={setScore}/>
           <button onClick={handleNextQuestion}>Siguiente Pregunta</button>
           <p>Puntaje: {score}</p>

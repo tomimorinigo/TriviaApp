@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import getRandomQuestion from "../services/QuestionsService";
 
-function Question({ category }) {
+function Question({ category, setScore }) {
   const [question, setQuestion] = useState(null);
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [counter, setCounter] = useState(10);
+  const [selectionMade, setSelectionMade] = useState(false);
+  const [counterInterval, setCounterInterval] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const questionData = await getRandomQuestion(category);
         setQuestion(questionData);
-        console.log(questionData);
   
         // Creamos el array con las opciones
         const optionsArray = [
@@ -32,43 +33,49 @@ function Question({ category }) {
         // Manejar el error si la promesa no se cumple
       }
     };
-  
-    fetchData();
-  }, []);
 
-  useEffect(() => {
+    fetchData();
+    
     const timer = setInterval(() => {
       setCounter((prevCounter) => {
         // Detener el contador si llega a 0
         if (prevCounter === 0) {
           clearInterval(timer);
-          handleAnswer();
+          setSelectedOption(null);
         }
         // Decrementar el contador solo si es mayor que 0
         return prevCounter > 0 ? prevCounter - 1 : prevCounter;
       });
     }, 1000);
+    setCounterInterval(timer);
   
     return () => {
       clearInterval(timer);
     };
   }, []);
-  
 
   const handleOptionClick = (option) => {
-    if (counter > 0) {
+    if (!selectionMade && counter > 0) {
       setSelectedOption(option);
-      handleAnswer();
+      setSelectionMade(true); // Establecer que se ha realizado una selección
+      clearInterval(counterInterval);
     }
   };
+
+  useEffect(() => {
+    if (selectedOption !== null) {
+      handleAnswer();
+    }
+  }, [selectedOption]);
 
   const handleAnswer = () => {
     if (selectedOption === question.answer) {
       alert("Respuesta correcta!");
-    } else if(selectedOption === null){
-      alert("No has seleccionado nada!");
+      setScore((prevScore) => prevScore + 1);
+    } else if(selectedOption !== question.answer){
+      alert(`Incorrecto, la respuesta correcta era ${question.answer}`);
     } else {
-      alert("Respuesta incorrecta!");
+      alert(`No has seleccionado nada, la respuesta correcta era ${question.answer}` );
     }
   }
 
@@ -82,13 +89,13 @@ function Question({ category }) {
             key={index}
             onClick={() => handleOptionClick(option)}
             value={option}
-            disabled={counter === 0}
+            disabled={counter === 0 || selectionMade} // Deshabilitar si se ha realizado una selección
           >
             {option}
           </button>
         ))}
       <p>Tiempo restante: {counter}</p>
-      {counter === 0 && <p>Se acabó el tiempo! {selectedOption}</p>}
+      {counter === 0 && <p className="timeout">Se acabó el tiempo! {selectedOption}</p>}
     </div>
   );
 }

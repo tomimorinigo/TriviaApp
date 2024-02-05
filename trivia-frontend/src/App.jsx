@@ -1,5 +1,6 @@
 import './App.css'
 import { useState } from 'react'
+import Question from './components/Question'
 
 function App() {
 
@@ -38,7 +39,7 @@ function App() {
       {categorySelected && (
         <section>
           <h2>Categoria seleccionada: {category}</h2>
-          <Question />
+          <Question category={category} />
         </section>
       )}
     </>

@@ -1,6 +1,7 @@
 package com.tomasmorinigo.triviabackend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,8 +17,13 @@ public class SportController {
     private SportService sportService;
 
     @GetMapping("/random")
-    public SportQuestion getRandomQuestion() {
-        return sportService.getRandomQuestion().get();
+    public ResponseEntity<SportQuestion> getRandomQuestion() {
+        SportQuestion sportQuestion = sportService.getRandomQuestion().get();
+        if (sportQuestion != null) {
+            return ResponseEntity.ok().body(sportQuestion);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
